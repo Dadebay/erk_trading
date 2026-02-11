@@ -24,14 +24,14 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.gurbanov.erktrading"
-    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion')?.toInteger() ?: 36
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -44,11 +44,17 @@ android {
 
     defaultConfig {
         applicationId "com.gurbanov.erktrading"
-        minSdkVersion localProperties.getProperty('flutter.minSdkVersion').toInteger()
-        targetSdkVersion localProperties.getProperty('flutter.targetSdkVersion').toInteger()
-        versionCode localProperties.getProperty('flutter.versionCode').toInteger()
-        versionName localProperties.getProperty('flutter.versionName')
+        minSdkVersion localProperties.getProperty('flutter.minSdkVersion')?.toInteger() ?: 23
+        targetSdkVersion localProperties.getProperty('flutter.targetSdkVersion')?.toInteger() ?: 36
+        versionCode localProperties.getProperty('flutter.versionCode')?.toInteger() ?: 1
+        versionName localProperties.getProperty('flutter.versionName') ?: '1.0'
         multiDexEnabled true
+        
+        // 16KB page size support
+        // 16KB page size support
+        manifestPlaceholders += [
+            'android.app.supports16KbPageSize': 'true'
+        ]
     }
 
     buildTypes {

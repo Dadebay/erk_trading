@@ -33,6 +33,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- 16KB page size support for Android 15+ -->
+        <property
+            android:name="android.app.lib_name"
+            android:value="" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and

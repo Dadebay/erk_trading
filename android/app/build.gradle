@@ -25,6 +25,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.gurbanov.erktrading"
     compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion')?.toInteger() ?: 36
+    ndkVersion "29.0.14206865"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -49,12 +50,6 @@ android {
         versionCode localProperties.getProperty('flutter.versionCode')?.toInteger() ?: 1
         versionName localProperties.getProperty('flutter.versionName') ?: '1.0'
         multiDexEnabled true
-        
-        // 16KB page size support
-        // 16KB page size support
-        manifestPlaceholders += [
-            'android.app.supports16KbPageSize': 'true'
-        ]
     }
 
     buildTypes {

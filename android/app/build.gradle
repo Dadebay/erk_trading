@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.gurbanov.erktrading"
-    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion')?.toInteger() ?: 36
+    compileSdkVersion 36
     ndkVersion "29.0.14206865"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -45,16 +45,22 @@ android {
 
     defaultConfig {
         applicationId "com.gurbanov.erktrading"
-        minSdkVersion localProperties.getProperty('flutter.minSdkVersion')?.toInteger() ?: 23
-        targetSdkVersion localProperties.getProperty('flutter.targetSdkVersion')?.toInteger() ?: 36
-        versionCode localProperties.getProperty('flutter.versionCode')?.toInteger() ?: 1
-        versionName localProperties.getProperty('flutter.versionName') ?: '1.0'
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36
+        versionCode 16
+        versionName '2.2.4'
         multiDexEnabled true
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+        }
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging false
         }
     }
 }

@@ -1,0 +1,46 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "erk_trading",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "erk_trading (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "erk_trading (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "busy-thompson-56d075",
+            "cwd": ".claude/worktrees/busy-thompson-56d075",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "busy-thompson-56d075 (profile mode)",
+            "cwd": ".claude/worktrees/busy-thompson-56d075",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "busy-thompson-56d075 (release mode)",
+            "cwd": ".claude/worktrees/busy-thompson-56d075",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

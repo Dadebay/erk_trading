@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -24,15 +23,11 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.gurbanov.erktrading"
-    compileSdkVersion 36
+    compileSdk 36
     ndkVersion "29.0.14206865"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
     }
 
     sourceSets {
@@ -45,10 +40,10 @@ android {
 
     defaultConfig {
         applicationId "com.gurbanov.erktrading"
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 36
-        versionCode 16
-        versionName '2.2.4'
+        minSdk flutter.minSdkVersion
+        targetSdk 36
+        versionCode 17
+        versionName '2.2.5'
         multiDexEnabled true
     }
 
@@ -62,6 +57,12 @@ android {
         jniLibs {
             useLegacyPackaging false
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

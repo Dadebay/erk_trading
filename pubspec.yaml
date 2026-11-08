@@ -1,17 +1,14 @@
 name: erk_trading
-description: "A new Flutter project."
+description: "Erk Trading & Logistics mobile app."
 publish_to: 'none' 
-version: 1.0.0+1
+version: 2.2.5+17
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
   webview_flutter: ^4.13.0
-  change_app_package_name: ^1.5.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

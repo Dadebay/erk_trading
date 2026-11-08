@@ -2,128 +2,106 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'web_navigation_policy.dart';
+
+const _brandColor = Color(0xff2e4736);
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0xff2e4736), // Navigasyon barı yeşil
-      systemNavigationBarIconBrightness: Brightness.light, // İkonlar beyaz
-      statusBarColor: Color(0xff2e4736), // Status bar şeffaf
-      statusBarIconBrightness: Brightness.light, // Status bar ikonları beyaz
+      systemNavigationBarColor: _brandColor,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: _brandColor,
+      statusBarIconBrightness: Brightness.light,
     ),
   );
-  runApp(const MyApp());
+  runApp(const ErkTradingApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ErkTradingApp extends StatelessWidget {
+  const ErkTradingApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Erk Trading',
       debugShowCheckedModeBanner: false,
-      home: WebViewExample(),
+      home: ErkTradingWebView(),
     );
   }
 }
 
-class WebViewExample extends StatefulWidget {
-  const WebViewExample({super.key});
+class ErkTradingWebView extends StatefulWidget {
+  const ErkTradingWebView({super.key});
+
   @override
-  _WebViewExampleState createState() => _WebViewExampleState();
+  State<ErkTradingWebView> createState() => _ErkTradingWebViewState();
 }
 
-class _WebViewExampleState extends State<WebViewExample> {
-  late WebViewController _controller;
+class _ErkTradingWebViewState extends State<ErkTradingWebView> {
+  late final WebViewController _controller;
   bool _isLoading = true;
-  final String primaryUrl = 'https://erktrading.com/indexmobile/';
-  final String fallbackUrl = 'http://194.67.67.38/';
-  bool _useFallback = false;
+  bool _hasMainFrameError = false;
 
   @override
   void initState() {
     super.initState();
-
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted) // JavaScript etkin
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            if (progress == 100) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          },
-          onPageStarted: (String url) {
+          onPageStarted: (_) {
+            if (!mounted) return;
             setState(() {
               _isLoading = true;
+              _hasMainFrameError = false;
             });
           },
-          onPageFinished: (String url) {
+          onPageFinished: (_) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+          },
+          onWebResourceError: (error) {
+            if (error.isForMainFrame != true || !mounted) return;
             setState(() {
               _isLoading = false;
+              _hasMainFrameError = true;
             });
           },
-          onWebResourceError: (WebResourceError error) {
-            setState(() {
-              _isLoading = false;
-            });
-
-            // Eğer primary URL hata verirse, fallback URL'e geç
-            if (!_useFallback && error.errorType == WebResourceErrorType.hostLookup || error.errorType == WebResourceErrorType.connect || error.errorType == WebResourceErrorType.timeout) {
-              setState(() {
-                _useFallback = true;
-              });
-              _controller.loadRequest(Uri.parse(fallbackUrl));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Ana bağlantı başarısız. Yedek bağlantıya geçiliyor...'),
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Hata: ${error.description}'),
-                ),
-              );
-            }
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://erktrading.com/') || request.url.startsWith('http://194.67.67.38/')) {
-              return NavigationDecision.navigate; // Bu URL'lere gitmesine izin ver
-            }
-            return NavigationDecision.prevent; // Diğer URL'leri engelle
-          },
+          onNavigationRequest: (request) => isTrustedErkTradingUrl(request.url)
+              ? NavigationDecision.navigate
+              : NavigationDecision.prevent,
         ),
       )
-      ..loadRequest(Uri.parse(primaryUrl));
+      ..loadRequest(Uri.parse(erkTradingHomeUrl));
   }
 
-  Future<bool> _onWillPop() async {
+  void _retry() {
+    setState(() {
+      _isLoading = true;
+      _hasMainFrameError = false;
+    });
+    _controller.loadRequest(Uri.parse(erkTradingHomeUrl));
+  }
+
+  Future<void> _handleBack() async {
     if (await _controller.canGoBack()) {
-      _controller.goBack();
-      return false; // Uygulamadan çıkma
+      await _controller.goBack();
+    } else {
+      await SystemNavigator.pop();
     }
-    return true; // Eğer WebView'de geri gidilecek sayfa yoksa uygulamadan çık
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
-        if (didPop) {
-          return;
-        }
-        final bool shouldPop = await _onWillPop();
-        if (shouldPop && context.mounted) {
-          Navigator.of(context).pop();
-        }
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleBack();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xff2e4736), // Arka plan rengi
+        backgroundColor: _brandColor,
         body: SafeArea(
           top: true,
           bottom: false,
@@ -133,9 +111,26 @@ class _WebViewExampleState extends State<WebViewExample> {
                 top: -10,
                 child: WebViewWidget(controller: _controller),
               ),
-              if (_isLoading)
-                const Center(
-                  child: CircularProgressIndicator(),
+              if (_isLoading) const Center(child: CircularProgressIndicator()),
+              if (_hasMainFrameError)
+                ColoredBox(
+                  color: _brandColor,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Could not load Erk Trading.',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: _retry,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
             ],
           ),

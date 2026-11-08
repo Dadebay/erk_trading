@@ -6,7 +6,7 @@
         android:label="Erk Trading"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
         android:extractNativeLibs="false"> 
         <activity
             android:name=".MainActivity"

@@ -1,0 +1,6 @@
+# Copy to android/key.properties only after verifying your upload key with Play Console.
+# Keep the real keystore and credentials outside Git.
+storeFile=/absolute/path/to/erk-trading-upload.jks
+storePassword=REPLACE_LOCALLY
+keyAlias=REPLACE_LOCALLY
+keyPassword=REPLACE_LOCALLY

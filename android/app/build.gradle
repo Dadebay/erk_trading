@@ -13,12 +13,23 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '2'
+    flutterVersionCode = '17'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '2.0.0'
+    flutterVersionName = '2.2.5'
+}
+
+def releaseKeyPropertiesFile = rootProject.file('key.properties')
+def releaseKeyProperties = new Properties()
+if (releaseKeyPropertiesFile.exists()) {
+    releaseKeyPropertiesFile.withInputStream { releaseKeyProperties.load(it) }
+    ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].each { field ->
+        if (!releaseKeyProperties.getProperty(field)?.trim()) {
+            throw new GradleException("android/key.properties is missing ${field}")
+        }
+    }
 }
 
 android {
@@ -35,21 +46,33 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
-        checkReleaseBuilds false //<- add this line
     }
 
     defaultConfig {
         applicationId "com.gurbanov.erktrading"
         minSdk flutter.minSdkVersion
         targetSdk 36
-        versionCode 17
-        versionName '2.2.5'
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
         multiDexEnabled true
+    }
+
+    signingConfigs {
+        if (releaseKeyPropertiesFile.exists()) {
+            release {
+                storeFile file(releaseKeyProperties.getProperty('storeFile'))
+                storePassword releaseKeyProperties.getProperty('storePassword')
+                keyAlias releaseKeyProperties.getProperty('keyAlias')
+                keyPassword releaseKeyProperties.getProperty('keyPassword')
+            }
+        }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            if (releaseKeyPropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
